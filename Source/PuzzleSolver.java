@@ -22,12 +22,12 @@ public class PuzzleSolver{
 	//Constructor
 	public PuzzleSolver(String fileName)
 	{
-		isLoaded = LoadPuzzle(fileName);
+		isLoaded = loadPuzzle(fileName);
 	}
 	
 	
 	//Load the puzzle
-	private boolean LoadPuzzle(String fName)
+	private boolean loadPuzzle(String fName)
 	{
 		try 
 		{
@@ -94,7 +94,7 @@ public class PuzzleSolver{
 		}
 		
 		//cap off the bottom of the puzzle
-		System.out.println("*---*---*---*");	
+		System.out.println("*---*---*---*\n");	
 	}
 	
 	
@@ -102,7 +102,7 @@ public class PuzzleSolver{
 	//just undo the stuff that didn't work. returns returns true when we are moving on
 	//and into the next cell. also return true when completed (to fill exit condition)
 	// ** Warning ** the stack is about to get REALLY large.
-	public boolean solve()
+	public boolean solve(boolean showOutput, boolean waitKeyInput)
 	{
 		for(int y = 0; y < SIZE; y++)
 		{
@@ -112,10 +112,20 @@ public class PuzzleSolver{
 				{
 					for(int guessedNum = 1; guessedNum <= SIZE; guessedNum++)
 					{
-						puzzle[x][y] = guessedNum;
 						if(isValidMove(x, y, guessedNum))
 						{
-							if(solve())
+							puzzle[x][y] = guessedNum;
+							
+							if(showOutput)
+							{
+								printPuzzle();
+							}
+							if(waitKeyInput)
+							{
+								new java.util.Scanner(System.in).nextLine();
+							}
+							
+							if(solve(showOutput, waitKeyInput))
 							{
 								return true;	
 							}
@@ -125,9 +135,9 @@ public class PuzzleSolver{
 							}
 						}
 					}
+					return false;
 				}
 			}
-			return false;
 		}
 		return true;
 	}
@@ -137,7 +147,7 @@ public class PuzzleSolver{
 	private boolean numInRow(int row, int num) 
 	{
 		for(int i = 0; i < SIZE; i++)
-			if(puzzle[row][i] == num) //we found a match in row
+			if(puzzle[i][row] == num) //we found a match in row
 				return true;//exit loop with success
 		
 		//no match found, exit with failure
@@ -149,7 +159,7 @@ public class PuzzleSolver{
 	private boolean numInCol(int col, int num)
 	{
 		for(int i = 0; i < SIZE; i++)
-			if(puzzle[i][col] == num) //we found a match in row
+			if(puzzle[col][i] == num) //we found a match in row
 				return true;//exit loop with success
 		
 		//no match found, exit with failure
@@ -178,11 +188,11 @@ public class PuzzleSolver{
 	//check if a move violates sudoku rules or not
 	private boolean isValidMove(int x, int y, int num)
 	{
-		//all checks need to pass in order for the move to be valid
 		boolean colChk = numInCol(x, num);
 		boolean rowChk = numInRow(y, num);
 		boolean cnkChk = numInChunk(x, y, num);
 		
+		//all conditions need to be true for valid move
 		return !(colChk || rowChk || cnkChk);
 	}
 }
