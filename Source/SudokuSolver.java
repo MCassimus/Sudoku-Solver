@@ -29,15 +29,25 @@ public class SudokuSolver {
 		//solver.printPuzzle();
 		
 		if (!solver.isLoaded)
+		{
 			System.out.println("File not found. Please try again.");
+			// Closing the application
+			System.out.print("Press any key to continue ");
+			input.nextLine();
+		}
 		else
-			solver.solve(true, false);
-		
-		//solver.printPuzzle();
-		
-		// Closing the application
-		System.out.print("Press any key to continue ");
-		input.nextLine();
+		{
+			boolean displaySteps = false;
+			boolean waitKeyInput = false;
+			
+			if(!displaySteps)
+				solver.printPuzzle();
+			
+			solver.solve(displaySteps, waitKeyInput);
+			
+			if(!displaySteps)
+				solver.printPuzzle();
+		}
 
 		input.close();
 	}
