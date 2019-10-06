@@ -26,7 +26,7 @@ public class PuzzleSolver{
 	}
 	
 	
-	//load the puzzle
+	//Load the puzzle
 	private boolean LoadPuzzle(String fName)
 	{
 		try 
@@ -58,7 +58,7 @@ public class PuzzleSolver{
 		} 
 		catch (FileNotFoundException e) 
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
 			return false;//file is not found, print stacktrace + inform program
 		}
 	}
@@ -67,7 +67,7 @@ public class PuzzleSolver{
 	//Prints the puzzle stored in the puzzle array variable
 	public void printPuzzle()
 	{
-		for(int y = 0; y < 9; y++)
+		for(int y = 0; y < SIZE; y++)
 		{
 			//we are at the top of a cell
 			if(y % 3 == 0)
@@ -76,7 +76,7 @@ public class PuzzleSolver{
 				System.out.println("*---*---*---*");	
 			}
 			
-			for(int x = 0; x < 9; x++)
+			for(int x = 0; x < SIZE; x++)
 			{
 				//we are at the edge of a cell
 				if(x % 3 == 0)
@@ -86,7 +86,7 @@ public class PuzzleSolver{
 				}
 				
 				//show the actual numbers of the puzzle at the current location
-				System.out.print(puzzle[x][y]);
+				System.out.print(puzzle[x][y] == 0 ? " " : puzzle[x][y]);
 			}
 			
 			//add line break and final character
@@ -95,5 +95,94 @@ public class PuzzleSolver{
 		
 		//cap off the bottom of the puzzle
 		System.out.println("*---*---*---*");	
+	}
+	
+	
+	//We will solve this via recursive backtracking so we don't redo all the work
+	//just undo the stuff that didn't work. returns returns true when we are moving on
+	//and into the next cell. also return true when completed (to fill exit condition)
+	// ** Warning ** the stack is about to get REALLY large.
+	public boolean solve()
+	{
+		for(int y = 0; y < SIZE; y++)
+		{
+			for(int x = 0; x < SIZE; x++)
+			{
+				if(puzzle[x][y] == 0)//no solution in current coordinates
+				{
+					for(int guessedNum = 1; guessedNum <= SIZE; guessedNum++)
+					{
+						puzzle[x][y] = guessedNum;
+						if(isValidMove(x, y, guessedNum))
+						{
+							if(solve())
+							{
+								return true;	
+							}
+							else
+							{
+								puzzle[x][y] = 0;	
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+	
+	//Checking Methods
+	//check if a specified number is in a row
+	private boolean numInRow(int row, int num) 
+	{
+		for(int i = 0; i < SIZE; i++)
+			if(puzzle[row][i] == num) //we found a match in row
+				return true;//exit loop with success
+		
+		//no match found, exit with failure
+		return false;
+	}
+
+	
+	//check if a specified number is in a column
+	private boolean numInCol(int col, int num)
+	{
+		for(int i = 0; i < SIZE; i++)
+			if(puzzle[i][col] == num) //we found a match in row
+				return true;//exit loop with success
+		
+		//no match found, exit with failure
+		return false;
+	}
+	
+	
+	//check if a specified number is in a segment of the puzzle
+	private boolean numInChunk(int row, int col, int num)
+	{
+		//find the chunk of the puzzle where the row + col is locate
+		//calculating it this way also leaves it at the top / left most index of that chunk
+		int cnkY =  row - row % 3;
+		int cnkX =  col - col % 3;
+		
+		for(int y = cnkY; y < cnkY + 3; y++)
+			for(int x = cnkX; x < cnkX + 3; x++)
+				if(puzzle[x][y] == num) //we found a match in the chunk
+					return true;//exit loop with success
+		
+		//no match found, exit with failure
+		return false;
+	}
+	
+	
+	//check if a move violates sudoku rules or not
+	private boolean isValidMove(int x, int y, int num)
+	{
+		//all checks need to pass in order for the move to be valid
+		boolean colChk = numInCol(x, num);
+		boolean rowChk = numInRow(y, num);
+		boolean cnkChk = numInChunk(x, y, num);
+		
+		return !(colChk || rowChk || cnkChk);
 	}
 }

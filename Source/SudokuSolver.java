@@ -26,10 +26,16 @@ public class SudokuSolver {
 		// Initialize the puzzle solver and start the solving algorithm
 		PuzzleSolver solver = new PuzzleSolver(fileBase + selectedPuzzleFile);
 
-		if (solver.isLoaded)
-			solver.printPuzzle();
-		else
+		solver.printPuzzle();
+		
+		System.out.println();
+		
+		if (!solver.isLoaded)
 			System.out.println("File not found. Please try again.");
+		else
+			solver.solve();
+		
+		solver.printPuzzle();
 
 		// Closing the application
 		System.out.print("Press any key to continue ");
