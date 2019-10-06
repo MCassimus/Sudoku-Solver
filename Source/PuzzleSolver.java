@@ -172,8 +172,8 @@ public class PuzzleSolver{
 	{
 		//find the chunk of the puzzle where the row + col is locate
 		//calculating it this way also leaves it at the top / left most index of that chunk
-		int cnkY =  row - row % 3;
-		int cnkX =  col - col % 3;
+		int cnkX =  row - row % 3;
+		int cnkY =  col - col % 3;
 		
 		for(int y = cnkY; y < cnkY + 3; y++)
 			for(int x = cnkX; x < cnkX + 3; x++)
