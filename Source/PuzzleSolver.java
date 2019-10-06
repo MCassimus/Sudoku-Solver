@@ -7,23 +7,59 @@
  * 				 such as printing, importing and exporting, and solving the puzzle.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 
 public class PuzzleSolver{
 	//Class members
-	private int[][] puzzle = new int[9][9];
+	private static int SIZE = 9;
+	private int[][] puzzle;
+	public boolean isLoaded;
 	
 	
 	//Constructor
 	public PuzzleSolver(String fileName)
 	{
-		//initialize the puzzle
-		//this loop is temporary
-		for(int y = 0; y < 9; y++)
+		isLoaded = LoadPuzzle(fileName);
+	}
+	
+	
+	//load the puzzle
+	private boolean LoadPuzzle(String fName)
+	{
+		try 
 		{
-			for(int x = 0; x < 9; x++)
+			File inFile = new File(fName);
+			Scanner fileReader;
+			fileReader = new Scanner(inFile);
+			//clear the puzzle (there shouldn't be anything in there at this point)
+			puzzle = new int[SIZE][SIZE];
+			
+			//start reading the input file and load to var
+			for(int y = 0; y < SIZE; y++)
 			{
-				puzzle[x][y] = 0;
+				//get the next line and make it a character array (easier to convert to int)
+				char [] line = fileReader.nextLine().toCharArray(); 
+				
+				for(int x = 0; x < SIZE; x++)
+				{
+					//convert from char to int, then subtract the character conversion offset
+					int currentNum = Integer.parseInt(String.valueOf(line[x]));
+					puzzle[x][y] =  currentNum;
+				}
 			}
+			
+			fileReader.close();
+			
+			//finished loading without issues. 
+			return true;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+			return false;//file is not found, print stacktrace + inform program
 		}
 	}
 	
